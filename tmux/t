@@ -1,0 +1,49 @@
+#!/usr/bin/env sh
+# t - tmux task-layout launcher. Stock tmux, zero deps.
+# Lives next to the config so porting = copy the tmux/ dir only.
+#
+#   t              list running sessions + known layouts
+#   t nmap         build (or jump to) the "nmap" session with a 3-pane layout
+#
+# Add a layout: drop a new case below. Panes are built with directional
+# splits/selects so it works regardless of pane-base-index (stock Kali = 0).
+set -eu
+
+name="${1:-}"
+if [ -z "$name" ]; then
+  tmux ls 2>/dev/null || echo "(no sessions)"
+  echo "layouts: nmap  recon"
+  exit 0
+fi
+
+attach() {
+  if [ -n "${TMUX:-}" ]; then tmux switch-client -t "=$1"
+  else tmux attach -t "=$1"; fi
+}
+
+# Already running? Just go there.
+if tmux has-session -t "=$name" 2>/dev/null; then
+  attach "$name"; exit 0
+fi
+
+case "$name" in
+  nmap)
+    # big left pane + two stacked on the right (scan / notes / spare shell)
+    tmux new-session -d -s nmap -n scan
+    tmux split-window -h
+    tmux split-window -v
+    tmux select-pane -L
+    ;;
+  recon)
+    # main pane on top, short log/output strip on the bottom
+    tmux new-session -d -s recon -n main
+    tmux split-window -v -l 30%
+    tmux select-pane -U
+    ;;
+  *)
+    echo "unknown layout: $name (try: nmap recon)" >&2
+    exit 1
+    ;;
+esac
+
+attach "$name"

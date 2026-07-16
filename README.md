@@ -1,4 +1,4 @@
-# serverDotFiles
+# dotfiles
 
 Opinionated dotfiles and shell bootstrap for my servers and workstations. Single source of truth for Zsh, tmux, aliases, and custom scripts — shared unchanged across all machines.
 
@@ -44,8 +44,8 @@ Two packages behave differently on Ubuntu vs Debian:
 ### 1. Clone
 
 ```bash
-git clone https://github.com/ghimireaacs/serverDotFiles.git ~/serverDotFiles
-cd ~/serverDotFiles
+git clone https://github.com/ghimireaacs/dotfiles.git ~/dotfiles
+cd ~/dotfiles
 ```
 
 ### 2. Run bootstrap

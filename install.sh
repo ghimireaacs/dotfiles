@@ -61,6 +61,10 @@ create_symlink "$DOTFILES_DIR/.zshrc"    "$HOME/.zshrc"
 create_symlink "$DOTFILES_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 create_symlink "$DOTFILES_DIR/zsh"       "$HOME/zsh"
 create_symlink "$DOTFILES_DIR/cbin"      "$HOME/cbin"
+create_symlink "$DOTFILES_DIR/tmux"      "$HOME/.config/tmux"
+
+[[ -d "$HOME/.tmux/plugins/tpm" ]] || \
+  git clone --depth=1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 
 if [[ "$SHELL" != *"/zsh" ]]; then
   if [[ "$(uname)" == "Darwin" ]]; then
