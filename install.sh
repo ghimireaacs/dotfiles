@@ -52,10 +52,10 @@ if [[ ! -d "$P10K_DIR" ]]; then
 fi
 
 [[ -d "$PLUGINS_DIR/zsh-autosuggestions" ]] || \
-  git clone https://github.com/zsh-users/zsh-autosuggestions "$PLUGINS_DIR/zsh-autosuggestions"
+  git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions "$PLUGINS_DIR/zsh-autosuggestions"
 
 [[ -d "$PLUGINS_DIR/zsh-syntax-highlighting" ]] || \
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting "$PLUGINS_DIR/zsh-syntax-highlighting"
+  git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting "$PLUGINS_DIR/zsh-syntax-highlighting"
 
 create_symlink "$DOTFILES_DIR/.zshrc"    "$HOME/.zshrc"
 create_symlink "$DOTFILES_DIR/.p10k.zsh" "$HOME/.p10k.zsh"

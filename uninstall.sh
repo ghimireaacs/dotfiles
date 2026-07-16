@@ -35,6 +35,7 @@ restore_or_remove "$HOME/.zshrc"
 restore_or_remove "$HOME/.p10k.zsh"
 restore_or_remove "$HOME/zsh"
 restore_or_remove "$HOME/cbin"
+restore_or_remove "$HOME/.config/tmux"
 
 echo "Uninstall complete."
 

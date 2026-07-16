@@ -35,7 +35,7 @@ fi
 # --- Initialize Zoxide ---
 # This must come after Oh My Zsh to ensure it's loaded correctly.
 export _ZO_DOCTOR=0
-eval "$(zoxide init zsh)"
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
 # --- Load Powerlevel10k ---
 # This must come after Oh My Zsh.
@@ -65,40 +65,20 @@ source_dir "functions"
 unset -f source_dir
 
 
-export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
-export EDITOR='/opt/nvim-linux-x86_64/bin/nvim'
-
-# Ruby Environment (Enable Where Installed)
-# eval "$(rbenv init - zsh)"
-
-# GO Binary
-export PATH=$PATH:/usr/local/go/bin
-
-
-# Google Cloud SDK.
-if [ -f '/home/ghost/google-cloud-sdk/path.zsh.inc' ]; then . '/home/ghost/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/ghost/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/ghost/google-cloud-sdk/completion.zsh.inc'; fi
-
-
-# Kubernetes
-export KUBECONFIG=/home/ghost/.kube/config
-
-
 ## SSH TITLE
 
 if [ -n "$SSH_CONNECTION" ]; then
     # Disable Oh-My-Zsh auto title
     DISABLE_AUTO_TITLE="true"
 
-    # Set title to hostname
-    echo -ne "\033]0;SSH: $(hostname)\007"
-
-    # Keep title on every prompt
-    precmd() {
-        echo -ne "\033]0;SSH: $(hostname)\007"
-    }
+    # Keep title on every prompt (hook, so it can't clobber p10k's precmd)
+    autoload -Uz add-zsh-hook
+    _ssh_title() { echo -ne "\033]0;SSH: $(hostname)\007" }
+    add-zsh-hook precmd _ssh_title
+    _ssh_title
 fi
+
+# Machine-specific config (not tracked in this repo)
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
 
