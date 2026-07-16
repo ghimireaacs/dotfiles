@@ -66,6 +66,9 @@ create_symlink "$DOTFILES_DIR/tmux"      "$HOME/.config/tmux"
 [[ -d "$HOME/.tmux/plugins/tpm" ]] || \
   git clone --depth=1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 
+# Install tmux plugins now — nobody remembers prefix+I on a fresh box
+"$HOME/.tmux/plugins/tpm/bin/install_plugins"
+
 if [[ "$SHELL" != *"/zsh" ]]; then
   if [[ "$(uname)" == "Darwin" ]]; then
     chsh -s "$(which zsh)"
