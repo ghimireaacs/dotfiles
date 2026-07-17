@@ -65,7 +65,7 @@ source_dir "functions"
 unset -f source_dir
 
 
-## SSH TITLE
+## SSH TITLE — remote tabs identify their box; the local PC keeps its own title
 
 if [ -n "$SSH_CONNECTION" ]; then
     # Disable Oh-My-Zsh auto title

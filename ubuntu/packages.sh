@@ -10,14 +10,21 @@ sudo apt install -y \
   fzf \
   ripgrep \
   bat \
+  fd-find \
+  jq \
+  btop \
+  git-delta \
   entr \
   tmux
 
-# On Ubuntu, bat installs as 'batcat' to avoid conflict with another 'bat' package.
-# Symlink it to ~/.local/bin/bat so aliases and scripts work uniformly.
+# On Ubuntu, bat installs as 'batcat' and fd as 'fdfind' (name conflicts).
+# Symlink both to ~/.local/bin so aliases and scripts work uniformly.
 mkdir -p "$HOME/.local/bin"
 if [[ ! -e "$HOME/.local/bin/bat" ]]; then
   ln -s /usr/bin/batcat "$HOME/.local/bin/bat"
+fi
+if [[ ! -e "$HOME/.local/bin/fd" ]]; then
+  ln -s "$(command -v fdfind)" "$HOME/.local/bin/fd"
 fi
 
 # Ubuntu's apt zoxide package is outdated. Install from the official upstream installer.

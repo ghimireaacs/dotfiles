@@ -65,14 +65,17 @@ Done — symlinks pick up everything. Machine-specific lines belong in `~/.zshrc
 - **Framework:** Oh My Zsh, **theme:** Powerlevel10k (`p10k configure` to re-run the wizard)
 - **Plugins:** zsh-autosuggestions, zsh-syntax-highlighting, fzf, git
 - `cd` → zoxide, `ls`/`ll`/`la`/`tree` → eza (only where eza is installed; apt boxes keep stock `ls`)
-- SSH sessions set the terminal title to `SSH: <hostname>` so tabs are identifiable
+- `delta` becomes the git pager when installed (`install.sh` sets it via `git config --global`)
+- SSH sessions set the terminal title to `SSH: <hostname>` so tabs identify their box; the local machine keeps its own title
 
 **Prompt profiles** are chosen at runtime by `.p10k.zsh` — no install-time choice:
 
 | Condition | Profile |
 |---|---|
-| SSH session, WSL, or no display | `zsh/p10k/server.zsh` |
-| Local graphical session | `zsh/p10k/workstation.zsh` |
+| SSH session, or headless (no display) | `zsh/p10k/server.zsh` — teal dir, ip/bandwidth segment |
+| Local session (incl. WSL) | `zsh/p10k/workstation.zsh` — green dir, no ip segment |
+
+`server.zsh` is the full generated config; `workstation.zsh` sources it and overrides only the differences. To restyle everything, edit `server.zsh`; to change how the PC differs, edit the few lines in `workstation.zsh`.
 
 ## tmux
 
@@ -90,10 +93,10 @@ Prefix is `Ctrl+Space`. Bindings stay **stock-compatible** on purpose (no rebind
 |---|---|---|
 | macOS | `macos/packages.sh` | Homebrew assumed present; `bat` and `eza` install cleanly under their own names |
 | Arch | `arch/packages.sh` | Everything via pacman, including `eza` |
-| Ubuntu | `ubuntu/packages.sh` | apt's zoxide is outdated → installed from upstream; `bat` installs as `batcat` → symlinked to `~/.local/bin/bat` |
-| Debian | `debian/packages.sh` | apt zoxide is fine; same `batcat` symlink. Kali lands here (`/etc/debian_version`) — but Kali should use the tmux-only install instead |
+| Ubuntu | `ubuntu/packages.sh` | apt's zoxide is outdated → installed from upstream; `bat`/`fd` install as `batcat`/`fdfind` → symlinked into `~/.local/bin` |
+| Debian | `debian/packages.sh` | apt zoxide is fine; same `batcat`/`fdfind` symlinks. Kali lands here (`/etc/debian_version`) — but Kali should use the tmux-only install instead |
 
-Packages everywhere: git, curl, zsh, fzf, ripgrep, bat, zoxide, entr, tmux (+ eza on macOS/Arch).
+Packages everywhere: git, curl, zsh, fzf, ripgrep, bat, fd, jq, btop, delta, zoxide, entr, tmux (+ eza on macOS/Arch).
 
 ---
 

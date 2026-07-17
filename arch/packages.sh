@@ -9,6 +9,10 @@ sudo pacman -Syu --needed \
   ripgrep \
   bat \
   eza \
+  fd \
+  jq \
+  btop \
+  git-delta \
   entr \
   zoxide \
   tmux

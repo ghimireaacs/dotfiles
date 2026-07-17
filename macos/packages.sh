@@ -14,6 +14,10 @@ brew install \
   ripgrep \
   bat \
   eza \
+  fd \
+  jq \
+  btop \
+  git-delta \
   zoxide \
   entr \
   tmux
