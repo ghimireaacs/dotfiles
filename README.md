@@ -18,6 +18,7 @@ bootstrap.sh          OS detection → package install → shell setup
 | `zsh/p10k/` | Powerlevel10k profiles (auto-selected, see below) |
 | `tmux/` | tmux config, plugins list, `t` layout launcher — self-contained |
 | `cbin/` | Helper scripts (`dockstat`, `dockerTCP.sh`) |
+| `windows/` | PowerShell profile, oh-my-posh theme, fastfetch config + installer — see below |
 | `uninstall.sh` | Removes the symlinks, restores `.bak` backups |
 
 ---
@@ -49,6 +50,16 @@ sh ~/dotfiles/tmux/install.sh
 ```
 
 Symlinks `tmux/` to `~/.config/tmux` and installs plugins. Requires `tmux` and `git` to already be on the box. Everything tmux needs lives inside `tmux/` by design — porting it means copying that one directory.
+
+## Windows install
+
+PowerShell-side of the same look — lean catppuccin oh-my-posh prompt (mirrors the WSL workstation prompt), fastfetch at startup, zoxide, Terminal-Icons, unix-ish helper functions (`Show-Help` lists them). Requires [scoop](https://scoop.sh); no admin needed.
+
+```bat
+windows\install.bat
+```
+
+(or `pwsh -File windows\install.ps1`). Installs missing tools (zoxide, fastfetch, oh-my-posh, Terminal-Icons), then **copies** — not symlinks, those need admin on Windows — the profile + theme next to `$PROFILE` and `fastfetch.jsonc` to `~\.config\fastfetch\config.jsonc`. First pre-existing profile is kept as `.bak`. After a `git pull`, rerun the installer to deploy changes; edit the repo copies, not the live ones.
 
 ## Updating a machine
 
