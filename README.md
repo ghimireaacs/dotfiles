@@ -51,6 +51,8 @@ sh ~/dotfiles/tmux/install.sh
 
 Symlinks `tmux/` to `~/.config/tmux` and installs plugins. Requires `tmux` and `git` to already be on the box. Everything tmux needs lives inside `tmux/` by design — porting it means copying that one directory.
 
+If you sit at the box's own GUI (Kali VM), also run `sh ~/dotfiles/tmux/fonts.sh` — installs MesloLGS Nerd Font for the status-bar icons, then pick it in the terminal's preferences. SSH-only boxes skip this: icons render in *your* terminal's font, not the remote's.
+
 ## Windows install
 
 PowerShell-side of the same look — lean catppuccin oh-my-posh prompt (mirrors the WSL workstation prompt), fastfetch at startup, zoxide, Terminal-Icons, unix-ish helper functions (`Show-Help` lists them). Requires [scoop](https://scoop.sh); no admin needed.
