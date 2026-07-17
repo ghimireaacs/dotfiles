@@ -2,13 +2,15 @@
 # General System Aliases
 # ===================================================================
 
-# Exa (replacement for 'ls')
-alias ls='exa --icons'
-alias ll='exa -l --icons'
-alias la='exa -la --icons' # List all, including hidden
-alias llt='exa -lT --icons' # Tree view
-alias tree='exa --tree --level=3 -lh --git --icons --color-scale' # Tree 3 level
-
+# eza (replacement for 'ls') — only where installed (macOS/Arch via packages;
+# apt boxes keep stock ls unless eza is added manually)
+if command -v eza &>/dev/null; then
+  alias ls='eza --icons'
+  alias ll='eza -l --icons'
+  alias la='eza -la --icons' # List all, including hidden
+  alias llt='eza -lT --icons' # Tree view
+  alias tree='eza --tree --level=3 -lh --git --icons --color-scale' # Tree 3 level
+fi
 
 # Ripgrep (replacement for 'grep')
 # Always search hidden files and ignore .git

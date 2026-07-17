@@ -1,129 +1,105 @@
 # dotfiles
 
-Opinionated dotfiles and shell bootstrap for my servers and workstations. Single source of truth for Zsh, tmux, aliases, and custom scripts — shared unchanged across all machines.
+Opinionated dotfiles and shell bootstrap for my servers and workstations. Single source of truth for Zsh, tmux, aliases, and helper scripts — the same repo is cloned to every machine, and everything is **symlinked**, so `git pull` *is* the deploy.
 
----
+```
+bootstrap.sh          OS detection → package install → shell setup
+├── <os>/packages.sh  system packages (macos / arch / ubuntu / debian)
+└── install.sh        Oh My Zsh, Powerlevel10k, plugins, symlinks, chsh
+    └── tmux/install.sh   tmux config + TPM + plugins (also works standalone)
+```
 
-## What's included
-
-| Layer | Contents |
+| Path | What it is |
 |---|---|
-| `zsh/aliases/` | General, git, docker, function-based aliases |
-| `zsh/exports/` | PATH, NVM, and other environment exports |
+| `.zshrc` | Shell entry point — sources everything below |
+| `zsh/exports/` | Environment setup, one file per tool, each guarded (`nvm`, `cargo`, `go`, `gcloud`, …) — missing tools are silently skipped |
+| `zsh/aliases/` | Aliases: general, git, docker, terraform |
 | `zsh/functions/` | Custom Zsh functions |
-| `zsh/p10k/` | Powerlevel10k profiles (server / workstation / default) |
-| `tmux/` | tmux config + TPM plugin manager |
-| `cbin/` | Custom helper scripts (`dockstat`, `dockerTCP`) |
+| `zsh/p10k/` | Powerlevel10k profiles (auto-selected, see below) |
+| `tmux/` | tmux config, plugins list, `t` layout launcher — self-contained |
+| `cbin/` | Helper scripts (`dockstat`, `dockerTCP.sh`) |
+| `uninstall.sh` | Removes the symlinks, restores `.bak` backups |
 
 ---
 
-## OS support
-
-| OS | Package script | Notes |
-|---|---|---|
-| macOS | `macos/packages.sh` | Homebrew required; `bat` and `eza` included natively |
-| Arch Linux | `arch/packages.sh` | Full toolset via pacman |
-| Debian | `debian/packages.sh` | apt + batcat symlink |
-| Ubuntu | `ubuntu/packages.sh` | apt + batcat symlink + zoxide from upstream |
-
-### Why macOS gets its own script
-
-Homebrew is assumed to be pre-installed. Unlike Debian/Ubuntu, `bat` on macOS installs as `bat` (no `batcat` conflict), so no symlink is needed. `eza` is available directly via brew, same as Arch.
-
-### Why Ubuntu gets its own script
-
-Two packages behave differently on Ubuntu vs Debian:
-
-- **bat** — On both Debian and Ubuntu, `apt install bat` installs the binary as `batcat` (to avoid conflict with another `bat` package). The scripts create `~/.local/bin/bat → /usr/bin/batcat` so everything works uniformly.
-- **zoxide** — Ubuntu's apt repo ships an outdated version. The Ubuntu script installs zoxide directly from the official upstream installer to get the current release.
-
----
-
-## Installation
-
-### 1. Clone
+## Full install
 
 ```bash
 git clone https://github.com/ghimireaacs/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-```
-
-### 2. Run bootstrap
-
-```bash
 bash bootstrap.sh
 ```
 
-The script auto-detects your OS and runs the correct package installer, then runs the shell setup.
+Detects the OS (macOS → Arch → Ubuntu → Debian), installs packages, then:
 
-What it does:
-- Installs system packages for your OS
-- Installs Oh My Zsh
-- Installs Powerlevel10k theme
-- Installs zsh-autosuggestions and zsh-syntax-highlighting
-- Symlinks `.zshrc`, `.p10k.zsh`, `zsh/`, `tmux/`, and `cbin/`
-- Sets Zsh as your default login shell
+- Installs Oh My Zsh, Powerlevel10k, zsh-autosuggestions, zsh-syntax-highlighting
+- Symlinks `.zshrc`, `.p10k.zsh`, `zsh/`, `cbin/` into `$HOME` and `tmux/` to `~/.config/tmux`
+- Installs TPM and all tmux plugins (no `prefix + I` needed)
+- Sets Zsh as the login shell
 
-### 3. Log out and back in
+Log out and back in when it finishes. Everything is idempotent: existing files are backed up as `.bak` before symlinking, installed pieces are skipped, safe to re-run.
 
-Required for the shell change to take effect.
+## tmux-only install
 
-### 4. Install tmux plugins
+For boxes that get tmux and nothing else (Kali, jump hosts — no zsh layer, no PATH changes):
 
-On first tmux launch:
-
-```
-Prefix + I
+```bash
+git clone https://github.com/ghimireaacs/dotfiles.git ~/dotfiles
+sh ~/dotfiles/tmux/install.sh
 ```
 
-(Prefix is `Ctrl + Space`)
+Symlinks `tmux/` to `~/.config/tmux` and installs plugins. Requires `tmux` and `git` to already be on the box. Everything tmux needs lives inside `tmux/` by design — porting it means copying that one directory.
+
+## Updating a machine
+
+```bash
+cd ~/dotfiles && git pull
+```
+
+Done — symlinks pick up everything. Machine-specific lines belong in `~/.zshrc.local` (sourced last, not tracked), **never** in the repo's `.zshrc` — local edits there block the next pull.
 
 ---
 
-## Packages installed
+## Shell
 
-| Package | Purpose | macOS | Arch | Debian | Ubuntu |
-|---|---|---|---|---|---|
-| git | Version control | brew | pacman | apt | apt |
-| curl | HTTP client | brew | pacman | apt | apt |
-| zsh | Shell | brew | pacman | apt | apt |
-| fzf | Fuzzy finder | brew | pacman | apt | apt |
-| ripgrep | Fast grep | brew | pacman | apt | apt |
-| bat | Syntax-highlighted cat | brew | pacman | apt (→ batcat) | apt (→ batcat) |
-| eza | Modern ls | brew | pacman | — | — |
-| zoxide | Smarter cd | brew | pacman | apt | upstream |
-| entr | Run on file change | brew | pacman | apt | apt |
-| tmux | Terminal multiplexer | brew | pacman | apt | apt |
+- **Framework:** Oh My Zsh, **theme:** Powerlevel10k (`p10k configure` to re-run the wizard)
+- **Plugins:** zsh-autosuggestions, zsh-syntax-highlighting, fzf, git
+- `cd` → zoxide, `ls`/`ll`/`la`/`tree` → eza (only where eza is installed; apt boxes keep stock `ls`)
+- SSH sessions set the terminal title to `SSH: <hostname>` so tabs are identifiable
 
----
+**Prompt profiles** are chosen at runtime by `.p10k.zsh` — no install-time choice:
 
-## Shell setup
+| Condition | Profile |
+|---|---|
+| SSH session, WSL, or no display | `zsh/p10k/server.zsh` |
+| Local graphical session | `zsh/p10k/workstation.zsh` |
 
-- **Framework:** Oh My Zsh
-- **Theme:** Powerlevel10k (wizard runs on first login, re-run with `p10k configure`)
-- **Plugins:** zsh-autosuggestions, zsh-syntax-highlighting, fzf
-- **cd:** aliased to `z` (zoxide)
-- **ls/ll/la:** aliased to `eza` variants
+## tmux
+
+Prefix is `Ctrl+Space`. Bindings stay **stock-compatible** on purpose (no rebinds of `c`/`x`/`,`/`w`) so muscle memory transfers to bare tmux on unfamiliar boxes. Full reference: [`TMUXCheatSheet.md`](TMUXCheatSheet.md).
+
+- Plugins via TPM: catppuccin theme, sensible, yank, resurrect + continuum (session persistence), thumbs, fzf, fzf-url, sessionx, floax
+- `t <layout>` (or `prefix T` menu) builds pre-split task sessions — `t nmap` (3-pane recon), `t recon` (main + log). Plain POSIX sh, works on stock tmux with zero plugins. Add layouts in the `case` block of `tmux/t`.
+- `escape-time` is 50ms, not 0 — at 0, escape sequences split across SSH packets get misparsed into garbage text and broken mouse scrolling
 
 ---
 
-## Re-running safely
+## OS notes
 
-All scripts are idempotent:
-- Existing dotfiles are backed up as `.bak` before symlinking
-- Already-installed tools are skipped
-- Safe to re-run on existing systems
+| OS | Script | Why it's separate |
+|---|---|---|
+| macOS | `macos/packages.sh` | Homebrew assumed present; `bat` and `eza` install cleanly under their own names |
+| Arch | `arch/packages.sh` | Everything via pacman, including `eza` |
+| Ubuntu | `ubuntu/packages.sh` | apt's zoxide is outdated → installed from upstream; `bat` installs as `batcat` → symlinked to `~/.local/bin/bat` |
+| Debian | `debian/packages.sh` | apt zoxide is fine; same `batcat` symlink. Kali lands here (`/etc/debian_version`) — but Kali should use the tmux-only install instead |
 
----
-
-## What this repo does not manage
-
-- Desktop environments or GUI applications
-- System services
-- OS-level configuration
-- Anything that requires root beyond package installs
+Packages everywhere: git, curl, zsh, fzf, ripgrep, bat, zoxide, entr, tmux (+ eza on macOS/Arch).
 
 ---
+
+## Not managed here
+
+Desktop environments, GUI apps, system services, OS configuration — anything needing root beyond package installs.
 
 ## License
 
