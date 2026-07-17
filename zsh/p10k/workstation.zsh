@@ -18,8 +18,19 @@ typeset -g POWERLEVEL9K_MULTILINE_{FIRST,NEWLINE,LAST}_PROMPT_SUFFIX=
 
 # ── Layout: info on line 1, type behind a bare ❯ on line 2 ──────────────────
 typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon dir vcs newline prompt_char)
-# Same informative right side as the base, minus ip — that's server-watching noise.
-typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(${POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS:#ip})
+# Right side: only things that appear when they matter, all invisible otherwise.
+typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
+  status                  # exit code — errors only (OK checkmark disabled below)
+  command_execution_time  # only after commands >3s
+  background_jobs         # only when jobs exist
+  virtualenv              # only inside a venv
+  nvm                     # only when node version differs from default
+  kubecontext             # only during kubectl/helm commands
+  context                 # only as root
+)
+# No green ✔ after every command — a failed command already shows red ❯ + exit code.
+typeset -g POWERLEVEL9K_STATUS_OK=false
+typeset -g POWERLEVEL9K_STATUS_OK_PIPE=false
 
 # ── Catppuccin Mocha accents (matches the tmux theme; truecolor, PC-only) ───
 typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND='#f5c2e7'                   # pink
