@@ -70,12 +70,12 @@ Done — symlinks pick up everything. Machine-specific lines belong in `~/.zshrc
 
 **Prompt profiles** are chosen at runtime by `.p10k.zsh` — no install-time choice:
 
-| Condition | Profile |
-|---|---|
-| SSH session, or headless (no display) | `zsh/p10k/server.zsh` — teal dir, ip/bandwidth segment |
-| Local session (incl. WSL) | `zsh/p10k/workstation.zsh` — green dir, no ip segment |
+| Condition | Profile | Look |
+|---|---|---|
+| SSH session, or headless (no display) | `zsh/p10k/server.zsh` | Boxed powerline frame (╭─╰─), grey segment backgrounds, ip/bandwidth segment — reads "you are on a box" |
+| Local session (incl. WSL) | `zsh/p10k/workstation.zsh` | Lean: transparent, no frame, no arrows, catppuccin mocha colors, bare `❯` input line — matches the tmux theme |
 
-`server.zsh` is the full generated config; `workstation.zsh` sources it and overrides only the differences. To restyle everything, edit `server.zsh`; to change how the PC differs, edit the few lines in `workstation.zsh`.
+`server.zsh` is the full generated config and holds all segment logic; `workstation.zsh` sources it and restyles on top. Re-running `p10k configure` should only ever regenerate `server.zsh`.
 
 ## tmux
 
