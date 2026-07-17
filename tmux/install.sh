@@ -21,4 +21,11 @@ ln -s "$DIR" "$CONF"
   git clone --depth=1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 "$HOME/.tmux/plugins/tpm/bin/install_plugins"
 
+# tmux-yank needs a clipboard tool, or mouse-copy never reaches the system clipboard
+if [ -n "${WAYLAND_DISPLAY:-}" ] && ! command -v wl-copy >/dev/null 2>&1; then
+  echo "WARNING: no wl-copy — copy won't reach the clipboard (apt install wl-clipboard)"
+elif [ -n "${DISPLAY:-}" ] && ! command -v xclip >/dev/null 2>&1 && ! command -v xsel >/dev/null 2>&1; then
+  echo "WARNING: no xclip/xsel — copy won't reach the clipboard (apt install xclip)"
+fi
+
 echo "tmux ready. Start: tmux   Layouts: ~/.config/tmux/t"
