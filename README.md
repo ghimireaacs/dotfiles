@@ -6,7 +6,9 @@ Opinionated dotfiles and shell bootstrap for my servers and workstations. Single
 bootstrap.sh          OS detection → package install → shell setup
 ├── <os>/packages.sh  system packages (macos / arch / ubuntu / debian)
 └── install.sh        Oh My Zsh, Powerlevel10k, plugins, symlinks, chsh
-    └── tmux/install.sh   tmux config + TPM + plugins (also works standalone)
+    ├── tmux/install.sh      tmux config + TPM + plugins (also works standalone)
+    ├── niri/install.sh      niri config + binds, only if niri is on PATH (also works standalone)
+    └── noctalia/install.sh  noctalia settings seed, only if niri is on PATH (also works standalone)
 ```
 
 | Path | What it is |
@@ -17,6 +19,8 @@ bootstrap.sh          OS detection → package install → shell setup
 | `zsh/functions/` | Custom Zsh functions |
 | `zsh/p10k/` | Powerlevel10k profiles (auto-selected, see below) |
 | `tmux/` | tmux config, plugins list, `t` layout launcher — self-contained |
+| `niri/` | niri window manager config + keybinds (`config.kdl`, `binds.kdl`), self-contained |
+| `noctalia/` | noctalia shell settings (`settings.toml`), self-contained |
 | `cbin/` | Helper scripts (`dockstat`, `dockerTCP.sh`) |
 | `windows/` | PowerShell profile, oh-my-posh theme, fastfetch config + installer — see below |
 | `uninstall.sh` | Removes the symlinks, restores `.bak` backups |
@@ -36,6 +40,7 @@ Detects the OS (macOS → Arch → Ubuntu → Debian), installs packages, then:
 - Installs Oh My Zsh, Powerlevel10k, zsh-autosuggestions, zsh-syntax-highlighting
 - Symlinks `.zshrc`, `.p10k.zsh`, `zsh/`, `cbin/` into `$HOME` and `tmux/` to `~/.config/tmux`
 - Installs TPM and all tmux plugins (no `prefix + I` needed)
+- If `niri` is on PATH: symlinks `niri/` to `~/.config/niri` and deploys `noctalia/settings.toml`. Skipped entirely on boxes without niri (servers, jump hosts)
 - Sets Zsh as the login shell
 
 Log out and back in when it finishes. Everything is idempotent: existing files are backed up as `.bak` before symlinking, installed pieces are skipped, safe to re-run.
@@ -100,13 +105,40 @@ Prefix is `Ctrl+Space`. Bindings stay **stock-compatible** on purpose (no rebind
 
 ---
 
+## niri / noctalia
+
+Wayland window manager + shell, laptop/desktop only. Never installed on servers (`install.sh` checks `command -v niri` and skips otherwise).
+
+- `niri/config.kdl` + `niri/binds.kdl` are symlinked into `~/.config/niri/`, same as everything else in this repo: edit the repo copy, `git pull` deploys it.
+- `niri/noctalia.kdl` is **not** symlinked, only seeded once if missing. Noctalia's theme engine owns and rewrites this file on every theme/palette change; `config.kdl` just needs it to exist so `include "noctalia.kdl"` doesn't fail niri's very first start.
+- `noctalia/settings.toml` is **copy-deployed** to `~/.local/state/noctalia/settings.toml` (previous version saved as `.bak`), the same pattern as the Windows profile above. The live file gets rewritten by the app (wallpaper picks, panel state), so symlinking it would make normal use dirty the git tree. Tweak something in the app you want to keep → copy it back into the repo by hand, then commit.
+
+```bash
+sh ~/dotfiles/niri/install.sh
+sh ~/dotfiles/noctalia/install.sh
+```
+
+Both also run automatically from the main `install.sh` when niri is present.
+
+### Ghostty over SSH looks broken (double-typed input, doubled prompts)
+
+Not a dotfiles bug. Ghostty (not installed by this repo, just `apt install ghostty`) sets `TERM=xterm-ghostty`, and almost no remote host has that terminfo entry. The shell falls back to raw rendering, which looks exactly like keystrokes and prompts being duplicated. Fix per host:
+
+```bash
+infocmp -x xterm-ghostty | ssh <host> -- tic -x -
+```
+
+Purely additive: adds a terminfo entry, doesn't touch `xterm-256color` or anything else already there, so other clients (e.g. Windows) SSHing into the same host are unaffected. Needs re-running once per new host you SSH into.
+
+---
+
 ## OS notes
 
 | OS | Script | Why it's separate |
 |---|---|---|
 | macOS | `macos/packages.sh` | Homebrew assumed present; `bat` and `eza` install cleanly under their own names |
 | Arch | `arch/packages.sh` | Everything via pacman, including `eza` |
-| Ubuntu | `ubuntu/packages.sh` | apt's zoxide is outdated → installed from upstream; `bat`/`fd` install as `batcat`/`fdfind` → symlinked into `~/.local/bin` |
+| Ubuntu | `ubuntu/packages.sh` | apt's zoxide is outdated → installed from upstream; `bat`/`fd` install as `batcat`/`fdfind` → symlinked into `~/.local/bin`; also installs `wl-clipboard` (Wayland clipboard, needed by niri/tmux-yank) |
 | Debian | `debian/packages.sh` | apt zoxide is fine; same `batcat`/`fdfind` symlinks. Kali lands here (`/etc/debian_version`) — but Kali should use the tmux-only install instead |
 
 Packages everywhere: git, curl, zsh, fzf, ripgrep, bat, fd, jq, btop, delta, zoxide, entr, tmux (+ eza on macOS/Arch).

@@ -65,6 +65,13 @@ create_symlink "$DOTFILES_DIR/cbin"      "$HOME/cbin"
 # tmux: symlink config + TPM + plugins (same script works standalone)
 sh "$DOTFILES_DIR/tmux/install.sh"
 
+# niri + noctalia: only on boxes that actually have niri (desktop/laptop,
+# not servers) — skip silently everywhere else.
+if command -v niri >/dev/null 2>&1; then
+  sh "$DOTFILES_DIR/niri/install.sh"
+  sh "$DOTFILES_DIR/noctalia/install.sh"
+fi
+
 # delta as git pager (does nothing until configured; idempotent)
 if command -v delta >/dev/null 2>&1; then
   git config --global core.pager delta

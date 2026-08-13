@@ -15,7 +15,8 @@ sudo apt install -y \
   btop \
   git-delta \
   entr \
-  tmux
+  tmux \
+  wl-clipboard
 
 # On Ubuntu, bat installs as 'batcat' and fd as 'fdfind' (name conflicts).
 # Symlink both to ~/.local/bin so aliases and scripts work uniformly.

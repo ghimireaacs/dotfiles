@@ -1,0 +1,40 @@
+// Seed only. Noctalia's theme engine owns this file and rewrites it on
+// every theme/palette change. install.sh copies this in on first run so
+// config.kdl's `include "noctalia.kdl"` doesn't fail before noctalia has
+// run once — after that, noctalia's live copy is authoritative, not this one.
+
+layout {
+
+    focus-ring {
+        active-color   "#cba6f7"
+        inactive-color "#1e1e2e"
+        urgent-color   "#f38ba8"
+    }
+
+    border {
+        active-color   "#cba6f7"
+        inactive-color "#1e1e2e"
+        urgent-color   "#f38ba8"
+    }
+
+    shadow {
+        color "#11111b70"
+    }
+
+    tab-indicator {
+        active-color   "#cba6f7"
+        inactive-color "#6b02e9"
+        urgent-color   "#f38ba8"
+    }
+
+    insert-hint {
+        color "#cba6f780"
+    }
+}
+
+recent-windows {
+    highlight {
+        active-color "#cba6f7"
+        urgent-color "#f38ba8"
+    }
+}
