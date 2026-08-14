@@ -7,6 +7,7 @@ bootstrap.sh          OS detection → package install → shell setup
 ├── <os>/packages.sh  system packages (macos / arch / ubuntu / debian)
 └── install.sh        Oh My Zsh, Powerlevel10k, plugins, symlinks, chsh
     ├── tmux/install.sh      tmux config + TPM + plugins (also works standalone)
+    ├── fastfetch/install.sh fastfetch config + logo image (also works standalone)
     ├── niri/install.sh      niri config + binds, only if niri is on PATH (also works standalone)
     └── noctalia/install.sh  noctalia settings seed, only if niri is on PATH (also works standalone)
 ```
@@ -19,6 +20,7 @@ bootstrap.sh          OS detection → package install → shell setup
 | `zsh/functions/` | Custom Zsh functions |
 | `zsh/p10k/` | Powerlevel10k profiles (auto-selected, see below) |
 | `tmux/` | tmux config, plugins list, `t` layout launcher — self-contained |
+| `fastfetch/` | fastfetch layout + logo image (`config.jsonc`, `logo.png`, spare logos in `alt/`), self-contained |
 | `niri/` | niri window manager config + keybinds (`config.kdl`, `binds.kdl`), self-contained |
 | `noctalia/` | noctalia shell settings (`settings.toml`), self-contained |
 | `cbin/` | Helper scripts (`dockstat`, `dockerTCP.sh`) |
@@ -40,6 +42,7 @@ Detects the OS (macOS → Arch → Ubuntu → Debian), installs packages, then:
 - Installs Oh My Zsh, Powerlevel10k, zsh-autosuggestions, zsh-syntax-highlighting
 - Symlinks `.zshrc`, `.p10k.zsh`, `zsh/`, `cbin/` into `$HOME` and `tmux/` to `~/.config/tmux`
 - Installs TPM and all tmux plugins (no `prefix + I` needed)
+- Symlinks `fastfetch/config.jsonc` and `fastfetch/logo.png` to `~/.config/fastfetch/` (every box, servers included)
 - If `niri` is on PATH: symlinks `niri/` to `~/.config/niri` and deploys `noctalia/settings.toml`. Skipped entirely on boxes without niri (servers, jump hosts)
 - Sets Zsh as the login shell
 
@@ -104,6 +107,36 @@ Prefix is `Ctrl+Space`. Bindings stay **stock-compatible** on purpose (no rebind
 - `escape-time` is 50ms, not 0 — at 0, escape sequences split across SSH packets get misparsed into garbage text and broken mouse scrolling
 
 ---
+
+## fastfetch
+
+Minimalist system readout: host, os, kernel, uptime, screen / cpu, load, avg, ram, disk. Symlinked to `~/.config/fastfetch/` on every box, servers included.
+
+```sh
+sh ~/dotfiles/fastfetch/install.sh
+```
+
+The logo is a **real image** (`logo.png` — earth at the terminator, shot by the Artemis II crew, from [artemis-ii-wallpapers](https://github.com/JadenMajid/artemis-ii-wallpapers)) drawn with the kitty graphics protocol — ghostty and kitty render it, anything else falls back to distro ASCII art. Two gotchas, both silent:
+
+- **ImageMagick is a hidden dependency.** fastfetch `dlopen()`s it at runtime and does not declare it as a package dependency, so a stock `apt install fastfetch` renders ASCII art and never says why. `packages.sh` installs it now (`libmagickcore-7.q16hdri-10` on Debian/Ubuntu, `imagemagick` on Arch/macOS). If a logo won't draw, `fastfetch --show-errors` is the only thing that tells you.
+- **The keys use Nerd Font icons**, Font Awesome 4 range (stable across Nerd Fonts v2 and v3 — the Material Design range is not, it was remapped). Install a Nerd Font first: `sh ~/dotfiles/tmux/fonts.sh`.
+
+Swap the logo by replacing `fastfetch/logo.png` — square images with a transparent background work best in the 20×10 cell box. **Then clear the cache**, or you'll keep seeing the old image: fastfetch caches the encoded logo under `~/.cache/fastfetch/images` keyed by source path and pixel size, not by content, so a same-size replacement goes unnoticed. `install.sh` clears it; by hand it's `rm -rf ~/.cache/fastfetch/images`. `alt/` holds spares (`niri.png`, plus `niri.svg` to recolor and re-render).
+
+For another planet-from-orbit shot, `mklogo.py` does the background removal (needs `python3-pil`, `python3-numpy`):
+
+```sh
+./fastfetch/mklogo.py ~/Downloads/some-earth.jpg fastfetch/logo.png
+```
+
+It least-squares-fits a circle to the lit limb, makes everything outside it transparent, and smoothsteps the night side out — which also hides the flat edge you get when the photo clips the disc. It prints the fit residual; anything over ~3px means the limb was occluded and the result needs a look.
+
+No ImageMagick CLI on the box? Headless Chrome rasterizes an SVG fine:
+
+```sh
+google-chrome --headless --window-size=512,512 --default-background-color=00000000 \
+  --screenshot=logo.png file://$PWD/alt/niri.svg
+```
 
 ## niri / noctalia
 

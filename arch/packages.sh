@@ -15,4 +15,6 @@ sudo pacman -Syu --needed \
   git-delta \
   entr \
   zoxide \
-  tmux
+  tmux \
+  fastfetch \
+  imagemagick

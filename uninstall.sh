@@ -36,6 +36,8 @@ restore_or_remove "$HOME/.p10k.zsh"
 restore_or_remove "$HOME/zsh"
 restore_or_remove "$HOME/cbin"
 restore_or_remove "$HOME/.config/tmux"
+restore_or_remove "$HOME/.config/fastfetch/config.jsonc"
+restore_or_remove "$HOME/.config/fastfetch/logo.png"
 
 echo "Uninstall complete."
 

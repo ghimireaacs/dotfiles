@@ -20,4 +20,6 @@ brew install \
   git-delta \
   zoxide \
   entr \
-  tmux
+  tmux \
+  fastfetch \
+  imagemagick

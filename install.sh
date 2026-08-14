@@ -65,6 +65,9 @@ create_symlink "$DOTFILES_DIR/cbin"      "$HOME/cbin"
 # tmux: symlink config + TPM + plugins (same script works standalone)
 sh "$DOTFILES_DIR/tmux/install.sh"
 
+# fastfetch: config + logo, every machine including servers (same script works standalone)
+sh "$DOTFILES_DIR/fastfetch/install.sh"
+
 # niri + noctalia: only on boxes that actually have niri (desktop/laptop,
 # not servers) — skip silently everywhere else.
 if command -v niri >/dev/null 2>&1; then
