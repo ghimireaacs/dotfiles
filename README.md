@@ -112,6 +112,8 @@ Prefix is `Ctrl+Space`. Bindings stay **stock-compatible** on purpose (no rebind
 
 Minimalist system readout: host, os, kernel, uptime, screen / cpu, load, avg, ram, disk. Symlinked to `~/.config/fastfetch/` on every box, servers included.
 
+It runs at shell startup from `.zshrc`, deliberately placed **above the Powerlevel10k instant prompt preamble**. Below that line p10k captures console output, which trips its "console output during zsh initialization" warning *and* costs fastfetch its tty — so the image logo silently degrades to ASCII art. Keep it where it is.
+
 ```sh
 sh ~/dotfiles/fastfetch/install.sh
 ```

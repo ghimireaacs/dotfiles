@@ -7,6 +7,14 @@ setopt SHARE_HISTORY
 # Zsh Configuration
 # ===================================================================
 
+## Startup banner — MUST stay ABOVE the instant prompt preamble.
+## Below that line p10k captures console output, which (a) trips its "console
+## output during zsh initialization" warning and (b) leaves fastfetch without a
+## real tty, so its image logo silently degrades to ASCII art.
+if [[ -o interactive && "$TERM" != "dumb" ]] && command -v fastfetch &>/dev/null; then
+  fastfetch
+fi
+
 ## P10k Instant Prompt (must be first for speed)
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
@@ -80,5 +88,3 @@ fi
 
 # Machine-specific config (not tracked in this repo)
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
-
-
