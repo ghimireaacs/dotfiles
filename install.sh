@@ -1,18 +1,5 @@
 #!/bin/zsh
-#
-# Userland bootstrap for shell environment.
-#
-# This script is responsible for establishing a consistent Zsh-based
-# user environment across systems. It is intentionally OS-agnostic.
-#
-# Scope:
-# - Oh My Zsh installation
-# - Powerlevel10k theme installation
-# - Zsh plugin installation
-# - Symlinking shell-related dotfiles
-# - Setting Zsh as the default login shell
-#
-# System package installation is handled elsewhere.
+# Install the shell configuration, tmux plugins, and fastfetch artwork.
 
 set -euo pipefail
 
@@ -22,21 +9,12 @@ ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"
 THEMES_DIR="$ZSH_CUSTOM/themes"
 PLUGINS_DIR="$ZSH_CUSTOM/plugins"
 
-create_symlink() {
-  local src="$1"
-  local dst="$2"
+. "$DOTFILES_DIR/lib/files.sh"
 
-  mkdir -p "$(dirname "$dst")"
-
-  if [[ -e "$dst" || -L "$dst" ]]; then
-    if [[ -L "$dst" && "$(readlink "$dst")" == "$src" ]]; then
-      return
-    fi
-    mv -f "$dst" "$dst.bak"
-  fi
-
-  ln -s "$src" "$dst"
-}
+if [[ $# -ne 0 ]]; then
+  echo "Usage: zsh install.sh (desktop settings: sh niri/install.sh; sh noctalia/install.sh)" >&2
+  exit 1
+fi
 
 echo "Setting up Zsh environment"
 
@@ -57,10 +35,10 @@ fi
 [[ -d "$PLUGINS_DIR/zsh-syntax-highlighting" ]] || \
   git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting "$PLUGINS_DIR/zsh-syntax-highlighting"
 
-create_symlink "$DOTFILES_DIR/.zshrc"    "$HOME/.zshrc"
-create_symlink "$DOTFILES_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
-create_symlink "$DOTFILES_DIR/zsh"       "$HOME/zsh"
-create_symlink "$DOTFILES_DIR/cbin"      "$HOME/cbin"
+link_file "$DOTFILES_DIR/.zshrc"    "$HOME/.zshrc"
+link_file "$DOTFILES_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
+link_file "$DOTFILES_DIR/zsh"       "$HOME/zsh"
+link_file "$DOTFILES_DIR/cbin"      "$HOME/cbin"
 
 # tmux: symlink config + TPM + plugins (same script works standalone)
 sh "$DOTFILES_DIR/tmux/install.sh"
@@ -68,14 +46,8 @@ sh "$DOTFILES_DIR/tmux/install.sh"
 # fastfetch: config + logo, every machine including servers (same script works standalone)
 sh "$DOTFILES_DIR/fastfetch/install.sh"
 
-# niri + noctalia: only on boxes that actually have niri (desktop/laptop,
-# not servers) — skip silently everywhere else.
-if command -v niri >/dev/null 2>&1; then
-  sh "$DOTFILES_DIR/niri/install.sh"
-  sh "$DOTFILES_DIR/noctalia/install.sh"
-fi
-
-# delta as git pager (does nothing until configured; idempotent)
+# Desktop settings are applied separately to preserve live preferences.
+# Use delta for Git output when installed.
 if command -v delta >/dev/null 2>&1; then
   git config --global core.pager delta
   git config --global interactive.diffFilter 'delta --color-only'

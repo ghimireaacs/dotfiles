@@ -1,8 +1,10 @@
-# This file will contain all modified alias using functions.
-# Functions was introduced for alias to work seamlessly on my different distros.
-# All functions will be referenced on "../functions/modifiedAlias.zsh"
-
-# Bat (replacement for 'cat')
-alias cat='$BAT_BIN -pp'
-alias catl='$BAT_BIN'
-alias catp='$BAT_BIN -p'
+# Use bat when available; otherwise keep the system cat command.
+if command -v bat &>/dev/null; then
+  alias cat='bat -pp'
+  alias catl='bat'
+  alias catp='bat -p'
+elif command -v batcat &>/dev/null; then
+  alias cat='batcat -pp'
+  alias catl='batcat'
+  alias catp='batcat -p'
+fi

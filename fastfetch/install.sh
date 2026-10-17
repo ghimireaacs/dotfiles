@@ -10,19 +10,10 @@ command -v fastfetch >/dev/null 2>&1 || echo "WARNING: fastfetch not found on PA
 
 mkdir -p "$CONF"
 
-link() {
-  src="$1"
-  dst="$2"
-  if [ -L "$dst" ]; then
-    rm "$dst"
-  elif [ -e "$dst" ]; then
-    mv "$dst" "$dst.bak"
-  fi
-  ln -s "$src" "$dst"
-}
+. "$DIR/../lib/files.sh"
 
-link "$DIR/config.jsonc" "$CONF/config.jsonc"
-link "$DIR/logo.png"     "$CONF/logo.png"
+link_file "$DIR/config.jsonc" "$CONF/config.jsonc"
+link_file "$DIR/logo.png"     "$CONF/logo.png"
 
 # fastfetch caches the encoded image under ~/.cache/fastfetch/images, keyed by
 # source path and pixel size — NOT by content or mtime. Swap logo.png for another
@@ -37,7 +28,7 @@ rm -rf "${XDG_CACHE_HOME:-$HOME/.cache}/fastfetch/images"
 if [ "$(uname)" != "Darwin" ] && command -v ldconfig >/dev/null 2>&1; then
   if ! ldconfig -p 2>/dev/null | grep -q libMagickCore; then
     echo "NOTE: no ImageMagick runtime library found — the logo will fall back to ASCII art."
-    echo "      Debian/Ubuntu: sudo apt install libmagickcore-7.q16hdri-10"
+    echo "      Debian/Ubuntu: install the ImageMagick runtime available for your release."
     echo "      Arch:          sudo pacman -S imagemagick"
   fi
 fi

@@ -12,7 +12,7 @@ setopt SHARE_HISTORY
 ## output during zsh initialization" warning and (b) leaves fastfetch without a
 ## real tty, so its image logo silently degrades to ASCII art.
 
-if [[ -o interactive && "$TERM" != "dumb" ]] && command -v fastfetch &>/dev/null; then
+if [[ -o interactive && "$TERM" != "dumb" && "${DOTFILES_FASTFETCH:-1}" != 0 ]] && command -v fastfetch &>/dev/null; then
   # Over SSH (PowerShell/Windows Terminal) use the distro ASCII logo; kitty images only work locally
   if [[ -n "$SSH_CONNECTION" ]]; then
     fastfetch --logo-type builtin

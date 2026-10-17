@@ -43,7 +43,7 @@ Everything not listed here is stock tmux — muscle memory transfers to any bare
 
 | Keystroke        | Action                                            |
 | ---------------- | ------------------------------------------------- |
-| `Prefix` + `I`   | Install plugins (first launch on a new machine)   |
+| `Prefix` + `I`   | Install plugins (also run by the installer)   |
 | `Prefix` + `[`   | Enter copy mode (scroll with vi keys / `Ctrl+u`)  |
 | `v`, then `y`    | In copy mode: start selection, then yank (copy)   |
 | `Prefix` + `]`   | Paste from tmux buffer                            |
@@ -55,9 +55,9 @@ Everything not listed here is stock tmux — muscle memory transfers to any bare
 
 #### Task Layouts (`t`)
 
-Repeatable pre-arranged sessions. Backed by `~/.config/tmux/t` (ships in the
-tmux dir — stock tmux, no plugins, so it works on a vanilla Kali box that only
-has the tmux config ported).
+Saved pane layouts, available through `t` or `~/.config/tmux/t`. The installer
+links `t` into `~/.local/bin`; that directory must be on your PATH. The layout
+launcher itself needs only tmux.
 
 | Keystroke / Command | Action                                             |
 | ------------------- | -------------------------------------------------- |

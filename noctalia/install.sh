@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Standalone noctalia setup — seeds the shell's settings.
+# Apply the repository's Noctalia settings, keeping earlier versions as backups.
 #
 # COPY, not symlink: noctalia rewrites settings.toml live (theme picks,
 # wallpaper choice, panel state), so symlinking it into the repo would mean
@@ -11,13 +11,8 @@ set -eu
 DIR="$(cd "$(dirname "$0")" && pwd)"
 STATE="$HOME/.local/state/noctalia"
 
-mkdir -p "$STATE"
+. "$DIR/../lib/files.sh"
+copy_file "$DIR/settings.toml" "$STATE/settings.toml"
 
-if [ -e "$STATE/settings.toml" ]; then
-  cp "$STATE/settings.toml" "$STATE/settings.toml.bak"
-fi
-
-cp "$DIR/settings.toml" "$STATE/settings.toml"
-
-echo "noctalia settings deployed to $STATE/settings.toml (previous saved as .bak)."
+echo "Noctalia settings applied. Earlier settings are kept in numbered .bak files."
 echo "Restart noctalia (or niri) to pick them up."

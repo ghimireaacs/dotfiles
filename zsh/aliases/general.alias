@@ -19,14 +19,15 @@ alias rg="rg --hidden --glob '!.git'"
 # Sourcing .zshrc
 alias so='source ~/.zshrc'
 
-# cd to zoxide
-alias cd='z'
+# Use zoxide only when it is installed.
+if command -v zoxide &>/dev/null; then
+  alias cd='z'
+fi
 
 # Python
 alias python='python3'
 
-# Arch Specific
-alias hostname='cat /etc/hostname'
-
 # VS Codium
-alias code='codium'
+if command -v codium &>/dev/null && ! command -v code &>/dev/null; then
+  alias code='codium'
+fi
