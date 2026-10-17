@@ -11,8 +11,14 @@ setopt SHARE_HISTORY
 ## Below that line p10k captures console output, which (a) trips its "console
 ## output during zsh initialization" warning and (b) leaves fastfetch without a
 ## real tty, so its image logo silently degrades to ASCII art.
+
 if [[ -o interactive && "$TERM" != "dumb" ]] && command -v fastfetch &>/dev/null; then
-  fastfetch
+  # Over SSH (PowerShell/Windows Terminal) use the distro ASCII logo; kitty images only work locally
+  if [[ -n "$SSH_CONNECTION" ]]; then
+    fastfetch --logo-type builtin
+  else
+    fastfetch
+  fi
 fi
 
 ## P10k Instant Prompt (must be first for speed)
@@ -39,11 +45,6 @@ plugins=(
 if [ -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
   source "$HOME/.oh-my-zsh/oh-my-zsh.sh"
 fi
-
-# --- Initialize Zoxide ---
-# This must come after Oh My Zsh to ensure it's loaded correctly.
-export _ZO_DOCTOR=0
-command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
 # --- Load Powerlevel10k ---
 # This must come after Oh My Zsh.
@@ -72,6 +73,11 @@ source_dir "functions"
 # Unset helper to keep the shell environment clean.
 unset -f source_dir
 
+# --- Initialize Zoxide ---
+# Must come after exports: on Ubuntu zoxide lives in ~/.local/bin, which
+# path.zsh only adds to PATH. Initialising earlier leaves `z` (and `cd`) undefined.
+export _ZO_DOCTOR=0
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
 ## SSH TITLE — remote tabs identify their box; the local PC keeps its own title
 
